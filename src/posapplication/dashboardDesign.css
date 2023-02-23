@@ -1,0 +1,66 @@
+/*
+Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
+Click nbfs://nbhost/SystemFileSystem/Templates/Other/CascadeStyleSheet.css to edit this template
+*/
+/* 
+    Created on : Feb 23, 2023, 1:11:18 PM
+    Author     : andreidb
+*/
+
+.top-form{
+    -fx-background-color: #fff;
+    -fx-border-color: #000;
+    -fx-border-width: .4px .4px .2px .4px;
+}
+
+.semi-top-form{
+    -fx-background-color: #efefef;
+    -fx-border-color: #000;
+    -fx-border-width: .2px .4px .4px .4px;
+}
+.close{
+    -fx-background-color: transparent;
+    -fx-cursor: hand;
+}
+.close:hover{
+    -fx-background-color: #ffb88c;
+}
+
+.minimize{
+    -fx-background-color: transparent;
+    -fx-cursor: hand;
+}
+.minimize:hover{
+    -fx-background-color: #ddd;
+}
+.nav-form{
+    -fx-background-color: linear-gradient(to bottom right,#de6262   ,#ffb88c);
+}
+.nav-btn{
+      -fx-background-color: transparent;
+    -fx-cursor: hand;
+    -fx-font-tamily:"Arial";
+    -fx-font-size:14px;
+    -fx-text-fill: #fff;
+    -fx-alignment: center-left;
+}
+.logout{
+    -fx-background-color: #de6262;
+    -fx-cursor: hand;
+    -fx-border-radius: 10px;
+}
+.logout:hover{
+    
+     -fx-background-color: #ffb88c;
+}
+.shadow{
+    -fx-effect: dropshadow(three-pass-box,rgba(0,0,0,0.4),5,0,0,0);
+}
+.white-bg{
+    -fx-background-color: #fff;
+    -fx-background-radius: 9px;
+}
+.card{
+    -fx-background-color: linear-gradient(to bottom right,#de6262   ,#ffb88c);
+    -fx-background-radius: 9px;
+}
