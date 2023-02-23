@@ -47,7 +47,7 @@
                         <Font size="15.0" />
                      </font>
                   </Button>
-                  <Button fx:id="closeBtn" layoutX="234.0" layoutY="13.0" mnemonicParsing="false" onAction="#close" styleClass="close" stylesheets="@loginDesign.css" AnchorPane.rightAnchor="2.0" AnchorPane.topAnchor="2.0">
+                  <Button fx:id="closeBtn" layoutX="234.0" layoutY="13.0" mnemonicParsing="false" onAction="#Close" styleClass="close" stylesheets="@loginDesign.css" AnchorPane.rightAnchor="2.0" AnchorPane.topAnchor="2.0">
                      <graphic>
                         <FontAwesomeIcon glyphName="CLOSE" />
                      </graphic>

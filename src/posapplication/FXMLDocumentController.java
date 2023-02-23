@@ -5,6 +5,9 @@
 package posapplication;
 
 import java.net.URL;
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
 import java.util.ResourceBundle;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
@@ -36,7 +39,14 @@ public class FXMLDocumentController implements Initializable {
     @FXML
     private TextField usernameField;
     
-    public void close(){
+    private Connection connect;
+    private PreparedStatement prepare;
+    private ResultSet resultSet;
+    
+    public void LoginAdmin(){
+    }
+    
+    public void Close(){
         System.exit(0);
     }
     
