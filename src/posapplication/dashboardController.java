@@ -10,6 +10,7 @@ import java.util.Optional;
 import java.util.ResourceBundle;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
@@ -194,12 +195,42 @@ public class dashboardController implements Initializable {
     @FXML
     private Label usernameLabel;
 
+     @FXML
+    private Button orders_addBtn;
     
-    private double x=0;
-     private double y=0;
-    
-    
+    private double x = 0;
+    private double y = 0;
 
+    public void switchForm(ActionEvent event){
+        if(event.getSource()==home_btn){
+            home_form.setVisible(true);
+            addProducts_form.setVisible(false);
+            orders_form.setVisible(false);
+            
+            home_btn.setStyle("-fx-background-color: linear-gradient(to bottom right,#de6262   ,#ffb88c);");
+            addProducts_btn.setStyle("-fx-background-color:transparent;");
+            orders_btn.setStyle("-fx-background-color:transparent;");
+        }
+        else if(event.getSource()==addProducts_btn){
+            home_form.setVisible(false);
+            addProducts_form.setVisible(true);
+            orders_form.setVisible(false);
+            
+            home_btn.setStyle("-fx-background-color:transparent;");
+            addProducts_btn.setStyle("-fx-background-color: linear-gradient(to bottom right,#de6262   ,#ffb88c);");
+            orders_btn.setStyle("-fx-background-color:transparent;");
+        }
+        else if(event.getSource()==orders_btn){
+            home_form.setVisible(false);
+            addProducts_form.setVisible(false);
+            orders_form.setVisible(true);
+            
+            home_btn.setStyle("-fx-background-color:transparent;");
+            addProducts_btn.setStyle("-fx-background-color:transparent;");
+            orders_btn.setStyle("-fx-background-color: linear-gradient(to bottom right,#de6262   ,#ffb88c);");
+        }
+    }
+    
     public void logout() {
         try {
             Alert alert = new Alert(Alert.AlertType.CONFIRMATION);;
@@ -231,12 +262,13 @@ public class dashboardController implements Initializable {
                 });
 
                 stage.initStyle(StageStyle.TRANSPARENT);
-                
+
                 stage.setScene(scene);
                 stage.show();
-                
+
+            } else {
+                return;
             }
-            else return;
 
         } catch (IOException ex) {
             Logger.getLogger(dashboardController.class.getName()).log(Level.SEVERE, null, ex);
