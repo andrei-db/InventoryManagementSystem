@@ -25,6 +25,7 @@ import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.PasswordField;
 import javafx.scene.control.TextField;
+import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.AnchorPane;
 import javafx.stage.Stage;
 import javafx.stage.StageStyle;
@@ -52,12 +53,15 @@ public class FXMLDocumentController implements Initializable {
 
     @FXML
     private Label usernameLabel;
-    
+
     private Connection connect;
     private PreparedStatement prepare;
     private ResultSet result;
 
-    public void LoginAdmin() {
+    private double x = 0;
+    private double y = 0;
+
+    public void loginAdmin() {
         String sql = "SELECT * FROM admin WHERE username=? and password=?";
         connect = Database.connectDb();
         try {
@@ -66,10 +70,10 @@ public class FXMLDocumentController implements Initializable {
             prepare.setString(2, passwordField.getText());
 
             result = prepare.executeQuery();
-         
+
             Alert alert;
             if (usernameField.getText().isEmpty() || passwordField.getText().isEmpty()) {
-                
+
                 alert = new Alert(AlertType.ERROR);
                 alert.setTitle("Error Message");
                 alert.setHeaderText(null);
@@ -83,13 +87,24 @@ public class FXMLDocumentController implements Initializable {
                     alert.setContentText("Successfully Login!");
                     alert.showAndWait();
                     loginBtn.getScene().getWindow().hide();
-                    
+
                     Parent root;
-              
+
                     try {
                         root = FXMLLoader.load(getClass().getResource("dashboard.fxml"));
-                        
+
                         Stage stage = new Stage();
+
+                        root.setOnMousePressed((MouseEvent event) -> {
+                            x = event.getSceneX();
+                            y = event.getSceneY();
+                        });
+
+                        root.setOnMouseDragged((MouseEvent event) -> {
+                            stage.setX(event.getScreenX() - x);
+                            stage.setY(event.getScreenY() - y); 
+                        });
+
                         stage.initStyle(StageStyle.TRANSPARENT);
                         Scene scene = new Scene(root);
                         stage.setScene(scene);
@@ -111,7 +126,7 @@ public class FXMLDocumentController implements Initializable {
         }
     }
 
-    public void Close() {
+    public void close() {
         System.exit(0);
     }
 

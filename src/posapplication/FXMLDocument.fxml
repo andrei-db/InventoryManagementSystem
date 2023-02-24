@@ -42,12 +42,12 @@
                         <Font size="15.0" />
                      </font>
                   </PasswordField>
-                  <Button fx:id="loginBtn" layoutX="45.0" layoutY="263.0" mnemonicParsing="false" onAction="#LoginAdmin" prefHeight="40.0" prefWidth="210.0" styleClass="login-btn" stylesheets="@loginDesign.css" text="Login">
+                  <Button fx:id="loginBtn" layoutX="45.0" layoutY="263.0" mnemonicParsing="false" onAction="#loginAdmin" prefHeight="40.0" prefWidth="210.0" styleClass="login-btn" stylesheets="@loginDesign.css" text="Login">
                      <font>
                         <Font size="15.0" />
                      </font>
                   </Button>
-                  <Button fx:id="closeBtn" layoutX="234.0" layoutY="13.0" mnemonicParsing="false" onAction="#Close" styleClass="close" stylesheets="@loginDesign.css" AnchorPane.rightAnchor="2.0" AnchorPane.topAnchor="2.0">
+                  <Button fx:id="closeBtn" layoutX="234.0" layoutY="13.0" mnemonicParsing="false" onAction="#close" styleClass="close" stylesheets="@loginDesign.css" AnchorPane.rightAnchor="2.0" AnchorPane.topAnchor="2.0">
                      <graphic>
                         <FontAwesomeIcon glyphName="CLOSE" />
                      </graphic>
