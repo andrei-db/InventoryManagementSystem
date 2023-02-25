@@ -241,7 +241,7 @@
                                           <Font size="15.0" />
                                        </font>
                                     </Label>
-                                    <ComboBox fx:id="addProducts_productType" layoutX="168.0" layoutY="257.0" prefHeight="25.0" prefWidth="176.0" promptText="Choose" styleClass="textfield" stylesheets="@dashboardDesign.css" />
+                                    <ComboBox fx:id="addProducts_productType" layoutX="168.0" layoutY="257.0" onAction="#addProductsListType" prefHeight="25.0" prefWidth="176.0" promptText="Choose" styleClass="textfield" stylesheets="@dashboardDesign.css" />
                                     <Label layoutX="103.0" layoutY="293.0" prefHeight="30.0" prefWidth="45.0" text="Brand:">
                                        <font>
                                           <Font size="15.0" />
@@ -254,16 +254,16 @@
                                        </font>
                                     </Label>
                                     <TextField fx:id="addProducts_productName" layoutX="167.0" layoutY="336.0" prefHeight="25.0" prefWidth="178.0" styleClass="textfield" stylesheets="@dashboardDesign.css" />
-                                    <Button fx:id="addProducts_addBtn" layoutX="83.0" layoutY="501.0" mnemonicParsing="false" prefHeight="45.0" prefWidth="82.0" styleClass="design_buttons" stylesheets="@dashboardDesign.css" text="Add" />
+                                    <Button fx:id="addProducts_addBtn" layoutX="83.0" layoutY="501.0" mnemonicParsing="false" onAction="#addProductsAdd" prefHeight="45.0" prefWidth="82.0" styleClass="design_buttons" stylesheets="@dashboardDesign.css" text="Add" />
                                     <Button fx:id="addProducts_deleteBtn" layoutX="208.0" layoutY="584.0" mnemonicParsing="false" prefHeight="45.0" prefWidth="82.0" styleClass="design_buttons" stylesheets="@dashboardDesign.css" text="Delete" />
-                                    <Button fx:id="addProducts_resetBtn" layoutX="83.0" layoutY="584.0" mnemonicParsing="false" prefHeight="45.0" prefWidth="82.0" styleClass="design_buttons" stylesheets="@dashboardDesign.css" text="Reset" />
+                                    <Button fx:id="addProducts_resetBtn" layoutX="83.0" layoutY="584.0" mnemonicParsing="false" onAction="#addProductsReset" prefHeight="45.0" prefWidth="82.0" styleClass="design_buttons" stylesheets="@dashboardDesign.css" text="Reset" />
                                     <Button fx:id="addProducts_updateBtn" layoutX="206.0" layoutY="501.0" mnemonicParsing="false" prefHeight="45.0" prefWidth="82.0" styleClass="design_buttons" stylesheets="@dashboardDesign.css" text="Update" />
                                     <Label layoutX="102.0" layoutY="379.0" prefHeight="30.0" prefWidth="47.0" text="Status:">
                                        <font>
                                           <Font size="15.0" />
                                        </font>
                                     </Label>
-                                    <ComboBox fx:id="addProducts_status" layoutX="168.0" layoutY="380.0" prefHeight="25.0" prefWidth="176.0" promptText="Choose" styleClass="textfield" stylesheets="@dashboardDesign.css" />
+                                    <ComboBox fx:id="addProducts_status" layoutX="168.0" layoutY="380.0" onAction="#addProductsListStatus" prefHeight="25.0" prefWidth="176.0" promptText="Choose" styleClass="textfield" stylesheets="@dashboardDesign.css" />
                                     <Label layoutX="113.0" layoutY="423.0" prefHeight="30.0" prefWidth="36.0" text="Price">
                                        <font>
                                           <Font size="15.0" />
@@ -278,7 +278,7 @@
                                     <String fx:value="white-bg" />
                                  </styleClass>
                                  <children>
-                                    <TableView fx:id="addProducts_tableView" layoutX="15.0" layoutY="106.0" prefHeight="538.0" prefWidth="720.0">
+                                    <TableView fx:id="addProducts_tableView" layoutX="15.0" layoutY="106.0" onMouseClicked="#addProductsSelect" prefHeight="538.0" prefWidth="720.0">
                                       <columns>
                                         <TableColumn fx:id="addProducts_col_productId" prefWidth="119.0" text="Product ID" />
                                         <TableColumn fx:id="addProducts_col_productType" prefWidth="121.0" text="Type" />

@@ -12,6 +12,9 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
 import java.util.Optional;
 import java.util.ResourceBundle;
 import java.util.logging.Level;
@@ -27,6 +30,7 @@ import javafx.scene.Scene;
 import javafx.scene.chart.AreaChart;
 import javafx.scene.chart.BarChart;
 import javafx.scene.control.Alert;
+import javafx.scene.control.Alert.AlertType;
 import javafx.scene.control.Button;
 import javafx.scene.control.ButtonType;
 import javafx.scene.control.ComboBox;
@@ -50,192 +54,274 @@ import javafx.stage.StageStyle;
  * @author andreidb
  */
 public class dashboardController implements Initializable {
-    
+
     @FXML
     private Button addProducts_addBtn;
-    
+
     @FXML
     private TextField addProducts_brand;
-    
+
     @FXML
     private Button addProducts_btn;
-    
+
     @FXML
     private Button addProducts_deleteBtn;
-    
+
     @FXML
     private AnchorPane addProducts_form;
-    
+
     @FXML
     private ImageView addProducts_imageView;
-    
+
     @FXML
     private Button addProducts_importBtn;
-    
+
     @FXML
     private TextField addProducts_price;
-    
+
     @FXML
     private TextField addProducts_productId;
-    
+
     @FXML
     private TextField addProducts_productName;
-    
+
     @FXML
     private ComboBox<?> addProducts_productType;
-    
+
     @FXML
     private Button addProducts_resetBtn;
-    
+
     @FXML
     private TextField addProducts_search;
-    
+
     @FXML
     private ComboBox<?> addProducts_status;
-    
+
     @FXML
     private TableView<ProductData> addProducts_tableView;
-    
+
     @FXML
     private TableColumn<ProductData, String> addProducts_col_brand;
-    
+
     @FXML
     private TableColumn<ProductData, Double> addProducts_col_price;
-    
+
     @FXML
     private TableColumn<ProductData, Integer> addProducts_col_productId;
-    
+
     @FXML
     private TableColumn<ProductData, String> addProducts_col_productName;
-    
+
     @FXML
     private TableColumn<ProductData, String> addProducts_col_productType;
-    
+
     @FXML
     private TableColumn<ProductData, String> addProducts_col_status;
-    
+
     @FXML
     private Button addProducts_updateBtn;
-    
+
     @FXML
     private Button close;
-    
+
     @FXML
     private Label home_availableProducts;
-    
+
     @FXML
     private Button home_btn;
-    
+
     @FXML
     private AnchorPane home_form;
-    
+
     @FXML
     private AreaChart<?, ?> home_incomeChart;
-    
+
     @FXML
     private Label home_numberOrder;
-    
+
     @FXML
     private BarChart<?, ?> home_orderChart;
-    
+
     @FXML
     private Label home_totalIncome;
-    
+
     @FXML
     private Button logout;
-    
+
     @FXML
     private AnchorPane main_form;
-    
+
     @FXML
     private Button minimize;
-    
+
     @FXML
     private TextField orders_amount;
-    
+
     @FXML
     private Label orders_balance;
-    
+
     @FXML
     private ComboBox<?> orders_brand;
-    
+
     @FXML
     private Button orders_btn;
-    
+
     @FXML
     private TableColumn<?, ?> orders_col_brand;
-    
+
     @FXML
     private TableColumn<?, ?> orders_col_price;
-    
+
     @FXML
     private TableColumn<?, ?> orders_col_productName;
-    
+
     @FXML
     private TableColumn<?, ?> orders_col_quantity;
-    
+
     @FXML
     private TableColumn<?, ?> orders_col_type;
-    
+
     @FXML
     private AnchorPane orders_form;
-    
+
     @FXML
     private Button orders_payBtn;
-    
+
     @FXML
     private ComboBox<?> orders_productName;
-    
+
     @FXML
     private ComboBox<?> orders_productType;
-    
+
     @FXML
     private Spinner<?> orders_quantity;
-    
+
     @FXML
     private Button orders_receiptBtn;
-    
+
     @FXML
     private Button orders_resetBtn;
-    
+
     @FXML
     private TableView<?> orders_tableView;
-    
+
     @FXML
     private Label orders_total;
-    
+
     @FXML
     private Label usernameLabel;
-    
+
     @FXML
     private Button orders_addBtn;
-    
+
     private double x = 0;
     private double y = 0;
-    
+
     private Connection connect;
     private PreparedStatement prepare;
     private Statement statement;
     private ResultSet result;
-    
+
     private Image image;
-    
+
     public void addProductsAdd() {
-        String sql = "INSERT INTO product (product_id,type,brand,productName,price,status,image,date) VALUES ()";
+        String sql = "INSERT INTO product (product_id,type,brand,productName,price,status,image,date)"
+                + "VALUES (?,?,?,?,?,?,?,?)";
+        connect = Database.connectDb();
+
+        try {
+
+            Alert alert;
+
+            if (addProducts_productId.getText().isEmpty()
+                    || addProducts_productType.getSelectionModel().getSelectedItem() == null
+                    || addProducts_brand.getText().isEmpty()
+                    || addProducts_productName.getText().isEmpty()
+                    || addProducts_price.getText().isEmpty()
+                    || addProducts_status.getSelectionModel().getSelectedItem() == null
+                    || GetData.path == "") {
+
+                alert = new Alert(AlertType.ERROR);
+                alert.setTitle("Error Message");
+                alert.setHeaderText(null);
+                alert.setContentText("Please fill all blank fields");
+                alert.showAndWait();
+
+            } else {
+
+                prepare = connect.prepareStatement(sql);
+                prepare.setString(1, addProducts_productId.getText());
+                prepare.setString(2, (String) addProducts_productType.getSelectionModel().getSelectedItem());
+                prepare.setString(3, addProducts_brand.getText());
+                prepare.setString(4, addProducts_productName.getText());
+                prepare.setString(5, addProducts_price.getText());
+                prepare.setString(6, (String) addProducts_status.getSelectionModel().getSelectedItem());
+
+                String uri = GetData.path;
+                uri = uri.replace("\\", "\\\\");
+
+                prepare.setString(7, uri);
+
+                Date date = new Date();
+                java.sql.Date sqlDate = new java.sql.Date(date.getTime());
+
+                prepare.setString(8, String.valueOf(sqlDate));
+
+                prepare.executeUpdate();
+                addProductShowListData();
+                addProductsReset();
+            }
+
+        } catch (SQLException ex) {
+            Logger.getLogger(dashboardController.class.getName()).log(Level.SEVERE, null, ex);
+        }
+    }
+
+    public void addProductsReset() {
+        addProducts_productId.setText("");
+        addProducts_productType.getSelectionModel().clearSelection();
+        addProducts_brand.setText("");
+        addProducts_productName.setText("");
+        addProducts_price.setText("");
+        addProducts_status.getSelectionModel().clearSelection();
+        addProducts_imageView.setImage(null);
+        GetData.path = "";
+
     }
 
     public void addProductsImportImage() {
         FileChooser open = new FileChooser();
         open.setTitle("Open Image File");
         open.getExtensionFilters().add(new ExtensionFilter("Image File", "*jpg", "*png"));
-        
+
         File file = open.showOpenDialog(main_form.getScene().getWindow());
-        
+
         if (file != null) {
             image = new Image(file.toURI().toString(), 146, 137, false, true);
             addProducts_imageView.setImage(image);
-            GetData.path=file.getAbsolutePath();
+            GetData.path = file.getAbsolutePath();
         }
+    }
+
+    private String[] listType = {"Snacks", "Drinks", "Dessert", "Gadgets", "Personal Products", "Others"};
+
+    public void addProductsListType() {
+        List<String> listT = new ArrayList<>();
+        for (String data : listType) {
+            listT.add(data);
+        }
+        ObservableList listData = FXCollections.observableArrayList(listT);
+        addProducts_productType.setItems(listData);
+    }
+    private String[] listStatus = {"Available", "Not Available"};
+
+    public void addProductsListStatus() {
+        List<String> listS = new ArrayList<>();
+        for (String data : listStatus) {
+            listS.add(data);
+        }
+        ObservableList listData = FXCollections.observableArrayList(listS);
+        addProducts_status.setItems(listData);
     }
 
     public ObservableList<ProductData> addProductsListData() {
@@ -262,12 +348,12 @@ public class dashboardController implements Initializable {
         } catch (SQLException ex) {
             Logger.getLogger(dashboardController.class.getName()).log(Level.SEVERE, null, ex);
         }
-        
+
         return productList;
     }
-    
+
     private ObservableList<ProductData> addProductsList;
-    
+
     public void addProductShowListData() {
         addProductsList = addProductsListData();
         addProducts_col_productId.setCellValueFactory(new PropertyValueFactory<>("productId"));
@@ -276,16 +362,34 @@ public class dashboardController implements Initializable {
         addProducts_col_productName.setCellValueFactory(new PropertyValueFactory<>("productName"));
         addProducts_col_price.setCellValueFactory(new PropertyValueFactory<>("price"));
         addProducts_col_status.setCellValueFactory(new PropertyValueFactory<>("status"));
-        
+
         addProducts_tableView.setItems(addProductsList);
     }
-    
+
+    public void addProductsSelect() {
+        ProductData productData = addProducts_tableView.getSelectionModel().getSelectedItem();
+        int index = addProducts_tableView.getSelectionModel().getSelectedIndex();
+
+        if (index - 1 < -1) {
+            return;
+        }
+
+        addProducts_productId.setText(String.valueOf(productData.getProductId()));
+        addProducts_brand.setText(productData.getBrand());
+        addProducts_productName.setText(productData.getProductName());
+        addProducts_price.setText(String.valueOf(productData.getPrice()));
+
+        String uri = "file:" + productData.getImage();
+        image = new Image(uri, 146, 137, false, true);
+        addProducts_imageView.setImage(image);
+    }
+
     public void switchForm(ActionEvent event) {
         if (event.getSource() == home_btn) {
             home_form.setVisible(true);
             addProducts_form.setVisible(false);
             orders_form.setVisible(false);
-            
+
             home_btn.setStyle("-fx-background-color: linear-gradient(to bottom right,#de6262   ,#ffb88c);");
             addProducts_btn.setStyle("-fx-background-color:transparent;");
             orders_btn.setStyle("-fx-background-color:transparent;");
@@ -293,80 +397,84 @@ public class dashboardController implements Initializable {
             home_form.setVisible(false);
             addProducts_form.setVisible(true);
             orders_form.setVisible(false);
-            
+
             home_btn.setStyle("-fx-background-color:transparent;");
             addProducts_btn.setStyle("-fx-background-color: linear-gradient(to bottom right,#de6262   ,#ffb88c);");
             orders_btn.setStyle("-fx-background-color:transparent;");
-            
+
             addProductShowListData();
+            addProductsListType();
+            addProductsListStatus();
         } else if (event.getSource() == orders_btn) {
             home_form.setVisible(false);
             addProducts_form.setVisible(false);
             orders_form.setVisible(true);
-            
+
             home_btn.setStyle("-fx-background-color:transparent;");
             addProducts_btn.setStyle("-fx-background-color:transparent;");
             orders_btn.setStyle("-fx-background-color: linear-gradient(to bottom right,#de6262   ,#ffb88c);");
         }
     }
-    
+
     public void logout() {
         try {
             Alert alert = new Alert(Alert.AlertType.CONFIRMATION);;
-            
+
             alert.setTitle("Confirmation Message");
             alert.setHeaderText(null);
             alert.setContentText("Are you sure you want to logout?");
             Optional<ButtonType> option = alert.showAndWait();
-            
+
             if (option.get().equals(ButtonType.OK)) {
                 logout.getScene().getWindow().hide();
                 Parent root = FXMLLoader.load(getClass().getResource("FXMLDocument.fxml"));
                 Stage stage = new Stage();
                 Scene scene = new Scene(root);
-                
+
                 root.setOnMousePressed((MouseEvent event) -> {
                     x = event.getSceneX();
                     y = event.getSceneY();
                 });
-                
+
                 root.setOnMouseDragged((MouseEvent event) -> {
                     stage.setX(event.getScreenX() - x);
                     stage.setY(event.getScreenY() - y);
                     stage.setOpacity(.8);
                 });
-                
+
                 root.setOnMouseReleased((MouseEvent event) -> {
                     stage.setOpacity(1);
                 });
-                
+
                 stage.initStyle(StageStyle.TRANSPARENT);
-                
+
                 stage.setScene(scene);
                 stage.show();
-                
+
             } else {
                 return;
             }
-            
+
         } catch (IOException ex) {
             Logger.getLogger(dashboardController.class.getName()).log(Level.SEVERE, null, ex);
         }
-        
+
     }
-    
+
     public void minimize() {
         Stage stage = (Stage) main_form.getScene().getWindow();
         stage.setIconified(true);
     }
-    
+
     public void close() {
         System.exit(0);
     }
-    
+
     @Override
     public void initialize(URL location, ResourceBundle resources) {
         addProductShowListData();
+        addProductsListType();
+        addProductsListStatus();
     }
-    
+
 }
