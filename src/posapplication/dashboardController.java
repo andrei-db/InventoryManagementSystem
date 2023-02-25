@@ -21,6 +21,8 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
+import javafx.collections.transformation.FilteredList;
+import javafx.collections.transformation.SortedList;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
@@ -86,7 +88,7 @@ public class dashboardController implements Initializable {
     private TextField addProducts_productName;
 
     @FXML
-    private ComboBox<?> addProducts_productType;
+    private ComboBox<String> addProducts_productType;
 
     @FXML
     private Button addProducts_resetBtn;
@@ -95,7 +97,7 @@ public class dashboardController implements Initializable {
     private TextField addProducts_search;
 
     @FXML
-    private ComboBox<?> addProducts_status;
+    private ComboBox<String> addProducts_status;
 
     @FXML
     private TableView<ProductData> addProducts_tableView;
@@ -252,7 +254,7 @@ public class dashboardController implements Initializable {
                 String checkData = "SELECT product_id FROM product WHERE product_id='" + addProducts_productId.getText() + "'";
 
                 statement = connect.createStatement();
-                result = statement.executeQuery(sql);
+                result = statement.executeQuery(checkData);
 
                 if (result.next()) {
                     alert = new Alert(AlertType.ERROR);
@@ -441,6 +443,41 @@ public class dashboardController implements Initializable {
         addProducts_status.setItems(listData);
     }
 
+    public void addProductsSearch(){
+        FilteredList<ProductData> filter=new FilteredList<>(addProductsList,e->true);
+        addProducts_search.textProperty().addListener((Observable,oldValue,newValue)->{
+            filter.setPredicate(predicateProductData->{
+                if(newValue==null || newValue.isEmpty()){
+                    return true;
+                }
+                
+                String searchKey=newValue.toLowerCase();
+                
+                if(predicateProductData.getProductId().toString().contains(searchKey)){return true;}
+                else if(predicateProductData.getType().toLowerCase().contains(searchKey)){
+                    return true;
+                }
+                else if(predicateProductData.getBrand().toLowerCase().contains(searchKey)){
+                    return true;
+                }
+                else if(predicateProductData.getProductName().toLowerCase().contains(searchKey)){
+                    return true;
+                }
+                else if(predicateProductData.getPrice().toString().contains(searchKey)){
+                    return true;
+                }
+                else if(predicateProductData.getStatus().toLowerCase().contains(searchKey)){
+                    return true;
+                }
+                else
+                return false;
+            });
+        });
+        SortedList<ProductData>sortList=new SortedList<>(filter);
+        sortList.comparatorProperty().bind(addProducts_tableView.comparatorProperty());
+        addProducts_tableView.setItems(sortList);
+    }
+    
     public ObservableList<ProductData> addProductsListData() {
         ObservableList<ProductData> productList = FXCollections.observableArrayList();
         String sql = "SELECT * FROM product";
@@ -494,8 +531,10 @@ public class dashboardController implements Initializable {
         addProducts_productId.setText(String.valueOf(productData.getProductId()));
 
         addProducts_brand.setText(productData.getBrand());
+       addProducts_productType.setValue(productData.getType());
         addProducts_productName.setText(productData.getProductName());
         addProducts_price.setText(String.valueOf(productData.getPrice()));
+        addProducts_status.setValue(productData.getStatus());
 
         String uri = "file:" + productData.getImage();
         image = new Image(uri, 146, 137, false, true);
@@ -524,6 +563,7 @@ public class dashboardController implements Initializable {
             addProductsShowListData();
             addProductsListType();
             addProductsListStatus();
+            addProductsSearch();
         } else if (event.getSource() == orders_btn) {
             home_form.setVisible(false);
             addProducts_form.setVisible(false);
