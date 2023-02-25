@@ -249,27 +249,41 @@ public class dashboardController implements Initializable {
 
             } else {
 
-                prepare = connect.prepareStatement(sql);
-                prepare.setString(1, addProducts_productId.getText());
-                prepare.setString(2, (String) addProducts_productType.getSelectionModel().getSelectedItem());
-                prepare.setString(3, addProducts_brand.getText());
-                prepare.setString(4, addProducts_productName.getText());
-                prepare.setString(5, addProducts_price.getText());
-                prepare.setString(6, (String) addProducts_status.getSelectionModel().getSelectedItem());
+                String checkData = "SELECT product_id FROM product WHERE product_id='" + addProducts_productId.getText() + "'";
 
-                String uri = GetData.path;
-                uri = uri.replace("\\", "\\\\");
+                statement = connect.createStatement();
+                result = statement.executeQuery(sql);
 
-                prepare.setString(7, uri);
+                if (result.next()) {
+                    alert = new Alert(AlertType.ERROR);
+                    alert.setTitle("Error Message");
+                    alert.setHeaderText(null);
+                    alert.setContentText("Product ID: "+addProducts_productId.getText()+" already exist!");
+                    alert.showAndWait();
+                } else {
 
-                Date date = new Date();
-                java.sql.Date sqlDate = new java.sql.Date(date.getTime());
+                    prepare = connect.prepareStatement(sql);
+                    prepare.setString(1, addProducts_productId.getText());
+                    prepare.setString(2, (String) addProducts_productType.getSelectionModel().getSelectedItem());
+                    prepare.setString(3, addProducts_brand.getText());
+                    prepare.setString(4, addProducts_productName.getText());
+                    prepare.setString(5, addProducts_price.getText());
+                    prepare.setString(6, (String) addProducts_status.getSelectionModel().getSelectedItem());
 
-                prepare.setString(8, String.valueOf(sqlDate));
+                    String uri = GetData.path;
+                    uri = uri.replace("\\", "\\\\");
 
-                prepare.executeUpdate();
-                addProductsShowListData();
-                addProductsReset();
+                    prepare.setString(7, uri);
+
+                    Date date = new Date();
+                    java.sql.Date sqlDate = new java.sql.Date(date.getTime());
+
+                    prepare.setString(8, String.valueOf(sqlDate));
+
+                    prepare.executeUpdate();
+                    addProductsShowListData();
+                    addProductsReset();
+                }
             }
 
         } catch (SQLException ex) {
@@ -323,7 +337,7 @@ public class dashboardController implements Initializable {
                     alert.setHeaderText(null);
                     alert.setContentText("Successfully Updated");
                     alert.showAndWait();
-                    
+
                     addProductsShowListData();
                     addProductsReset();
                 }
@@ -332,6 +346,52 @@ public class dashboardController implements Initializable {
             Logger.getLogger(dashboardController.class.getName()).log(Level.SEVERE, null, ex);
         }
 
+    }
+
+    public void addProductsDelete() {
+
+        String sql = "DELETE FROM product WHERE product_id='" + addProducts_productId.getText() + "'";
+        connect = Database.connectDb();
+        try {
+            Alert alert;
+            if (addProducts_productId.getText().isEmpty()
+                    || addProducts_productType.getSelectionModel().getSelectedItem() == null
+                    || addProducts_brand.getText().isEmpty()
+                    || addProducts_productName.getText().isEmpty()
+                    || addProducts_price.getText().isEmpty()
+                    || addProducts_status.getSelectionModel().getSelectedItem() == null
+                    || GetData.path == "") {
+
+                alert = new Alert(AlertType.ERROR);
+                alert.setTitle("Error Message");
+                alert.setHeaderText(null);
+                alert.setContentText("Please fill all blank fields");
+                alert.showAndWait();
+
+            } else {
+                alert = new Alert(AlertType.CONFIRMATION);
+                alert.setTitle("Confirmation Message");
+                alert.setHeaderText(null);
+                alert.setContentText("Are youy sure you want to DELETE Product ID: " + addProducts_productId.getText() + "?");
+
+                Optional<ButtonType> option = alert.showAndWait();
+                if (option.get().equals(ButtonType.OK)) {
+                    statement = connect.createStatement();
+                    statement.executeUpdate(sql);
+
+                    alert = new Alert(AlertType.INFORMATION);
+                    alert.setTitle("Information Message");
+                    alert.setHeaderText(null);
+                    alert.setContentText("Successfully Deleted");
+                    alert.showAndWait();
+
+                    addProductsShowListData();
+                    addProductsReset();
+                }
+            }
+        } catch (SQLException ex) {
+            Logger.getLogger(dashboardController.class.getName()).log(Level.SEVERE, null, ex);
+        }
     }
 
     public void addProductsReset() {
@@ -432,6 +492,7 @@ public class dashboardController implements Initializable {
         }
 
         addProducts_productId.setText(String.valueOf(productData.getProductId()));
+
         addProducts_brand.setText(productData.getBrand());
         addProducts_productName.setText(productData.getProductName());
         addProducts_price.setText(String.valueOf(productData.getPrice()));
