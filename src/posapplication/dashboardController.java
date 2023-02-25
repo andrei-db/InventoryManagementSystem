@@ -268,13 +268,70 @@ public class dashboardController implements Initializable {
                 prepare.setString(8, String.valueOf(sqlDate));
 
                 prepare.executeUpdate();
-                addProductShowListData();
+                addProductsShowListData();
                 addProductsReset();
             }
 
         } catch (SQLException ex) {
             Logger.getLogger(dashboardController.class.getName()).log(Level.SEVERE, null, ex);
         }
+    }
+
+    public void addProductsUpdate() {
+        String uri = GetData.path;
+        uri.replace("\\", "\\\\");
+
+        Date date = new Date();
+        java.sql.Date sqlDate = new java.sql.Date(date.getTime());
+        String sql = "UPDATE product SET type = '" + addProducts_productType.getSelectionModel().getSelectedItem()
+                + "',brand='" + addProducts_brand.getText()
+                + "',productName='" + addProducts_productName.getText()
+                + "',price='" + addProducts_price.getText()
+                + "',status='" + addProducts_status.getSelectionModel().getSelectedItem()
+                + "',image='" + uri
+                + "',date='" + sqlDate + "' WHERE product_id='" + addProducts_productId.getText() + "'";
+        connect = Database.connectDb();
+        try {
+            Alert alert;
+            if (addProducts_productId.getText().isEmpty()
+                    || addProducts_productType.getSelectionModel().getSelectedItem() == null
+                    || addProducts_brand.getText().isEmpty()
+                    || addProducts_productName.getText().isEmpty()
+                    || addProducts_price.getText().isEmpty()
+                    || addProducts_status.getSelectionModel().getSelectedItem() == null
+                    || GetData.path == "") {
+
+                alert = new Alert(AlertType.ERROR);
+                alert.setTitle("Error Message");
+                alert.setHeaderText(null);
+                alert.setContentText("Please fill all blank fields");
+                alert.showAndWait();
+
+            } else {
+                alert = new Alert(AlertType.CONFIRMATION);
+                alert.setTitle("Confirmation Message");
+                alert.setHeaderText(null);
+                alert.setContentText("Are youy sure you want to UPDATE Product ID: " + addProducts_productId.getText() + "?");
+
+                Optional<ButtonType> option = alert.showAndWait();
+                if (option.get().equals(ButtonType.OK)) {
+                    statement = connect.createStatement();
+                    statement.executeUpdate(sql);
+
+                    alert = new Alert(AlertType.INFORMATION);
+                    alert.setTitle("Information Message");
+                    alert.setHeaderText(null);
+                    alert.setContentText("Successfully Updated");
+                    alert.showAndWait();
+                    
+                    addProductsShowListData();
+                    addProductsReset();
+                }
+            }
+        } catch (SQLException ex) {
+            Logger.getLogger(dashboardController.class.getName()).log(Level.SEVERE, null, ex);
+        }
+
     }
 
     public void addProductsReset() {
@@ -354,7 +411,7 @@ public class dashboardController implements Initializable {
 
     private ObservableList<ProductData> addProductsList;
 
-    public void addProductShowListData() {
+    public void addProductsShowListData() {
         addProductsList = addProductsListData();
         addProducts_col_productId.setCellValueFactory(new PropertyValueFactory<>("productId"));
         addProducts_col_productType.setCellValueFactory(new PropertyValueFactory<>("type"));
@@ -382,6 +439,7 @@ public class dashboardController implements Initializable {
         String uri = "file:" + productData.getImage();
         image = new Image(uri, 146, 137, false, true);
         addProducts_imageView.setImage(image);
+        GetData.path = productData.getImage();
     }
 
     public void switchForm(ActionEvent event) {
@@ -402,7 +460,7 @@ public class dashboardController implements Initializable {
             addProducts_btn.setStyle("-fx-background-color: linear-gradient(to bottom right,#de6262   ,#ffb88c);");
             orders_btn.setStyle("-fx-background-color:transparent;");
 
-            addProductShowListData();
+            addProductsShowListData();
             addProductsListType();
             addProductsListStatus();
         } else if (event.getSource() == orders_btn) {
@@ -472,7 +530,7 @@ public class dashboardController implements Initializable {
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
-        addProductShowListData();
+        addProductsShowListData();
         addProductsListType();
         addProductsListStatus();
     }

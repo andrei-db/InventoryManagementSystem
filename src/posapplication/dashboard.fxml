@@ -257,7 +257,7 @@
                                     <Button fx:id="addProducts_addBtn" layoutX="83.0" layoutY="501.0" mnemonicParsing="false" onAction="#addProductsAdd" prefHeight="45.0" prefWidth="82.0" styleClass="design_buttons" stylesheets="@dashboardDesign.css" text="Add" />
                                     <Button fx:id="addProducts_deleteBtn" layoutX="208.0" layoutY="584.0" mnemonicParsing="false" prefHeight="45.0" prefWidth="82.0" styleClass="design_buttons" stylesheets="@dashboardDesign.css" text="Delete" />
                                     <Button fx:id="addProducts_resetBtn" layoutX="83.0" layoutY="584.0" mnemonicParsing="false" onAction="#addProductsReset" prefHeight="45.0" prefWidth="82.0" styleClass="design_buttons" stylesheets="@dashboardDesign.css" text="Reset" />
-                                    <Button fx:id="addProducts_updateBtn" layoutX="206.0" layoutY="501.0" mnemonicParsing="false" prefHeight="45.0" prefWidth="82.0" styleClass="design_buttons" stylesheets="@dashboardDesign.css" text="Update" />
+                                    <Button fx:id="addProducts_updateBtn" layoutX="206.0" layoutY="501.0" mnemonicParsing="false" onAction="#addProductsUpdate" prefHeight="45.0" prefWidth="82.0" styleClass="design_buttons" stylesheets="@dashboardDesign.css" text="Update" />
                                     <Label layoutX="102.0" layoutY="379.0" prefHeight="30.0" prefWidth="47.0" text="Status:">
                                        <font>
                                           <Font size="15.0" />
