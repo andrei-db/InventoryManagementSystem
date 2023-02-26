@@ -169,19 +169,19 @@ public class dashboardController implements Initializable {
     private Button orders_btn;
 
     @FXML
-    private TableColumn<?, ?> orders_col_brand;
+    private TableColumn<CustomerData, String> orders_col_brand;
 
     @FXML
-    private TableColumn<?, ?> orders_col_price;
+    private TableColumn<CustomerData, Double> orders_col_price;
 
     @FXML
-    private TableColumn<?, ?> orders_col_productName;
+    private TableColumn<CustomerData, String> orders_col_productName;
 
     @FXML
-    private TableColumn<?, ?> orders_col_quantity;
+    private TableColumn<CustomerData, Integer> orders_col_quantity;
 
     @FXML
-    private TableColumn<?, ?> orders_col_type;
+    private TableColumn<CustomerData, String> orders_col_type;
 
     @FXML
     private AnchorPane orders_form;
@@ -205,7 +205,7 @@ public class dashboardController implements Initializable {
     private Button orders_resetBtn;
 
     @FXML
-    private TableView<?> orders_tableView;
+    private TableView<CustomerData> orders_tableView;
 
     @FXML
     private Label orders_total;
@@ -260,7 +260,7 @@ public class dashboardController implements Initializable {
                     alert = new Alert(AlertType.ERROR);
                     alert.setTitle("Error Message");
                     alert.setHeaderText(null);
-                    alert.setContentText("Product ID: "+addProducts_productId.getText()+" already exist!");
+                    alert.setContentText("Product ID: " + addProducts_productId.getText() + " already exist!");
                     alert.showAndWait();
                 } else {
 
@@ -443,41 +443,38 @@ public class dashboardController implements Initializable {
         addProducts_status.setItems(listData);
     }
 
-    public void addProductsSearch(){
-        FilteredList<ProductData> filter=new FilteredList<>(addProductsList,e->true);
-        addProducts_search.textProperty().addListener((Observable,oldValue,newValue)->{
-            filter.setPredicate(predicateProductData->{
-                if(newValue==null || newValue.isEmpty()){
+    public void addProductsSearch() {
+        FilteredList<ProductData> filter = new FilteredList<>(addProductsList, e -> true);
+        addProducts_search.textProperty().addListener((Observable, oldValue, newValue) -> {
+            filter.setPredicate(predicateProductData -> {
+                if (newValue == null || newValue.isEmpty()) {
                     return true;
                 }
-                
-                String searchKey=newValue.toLowerCase();
-                
-                if(predicateProductData.getProductId().toString().contains(searchKey)){return true;}
-                else if(predicateProductData.getType().toLowerCase().contains(searchKey)){
+
+                String searchKey = newValue.toLowerCase();
+
+                if (predicateProductData.getProductId().toString().contains(searchKey)) {
                     return true;
-                }
-                else if(predicateProductData.getBrand().toLowerCase().contains(searchKey)){
+                } else if (predicateProductData.getType().toLowerCase().contains(searchKey)) {
                     return true;
-                }
-                else if(predicateProductData.getProductName().toLowerCase().contains(searchKey)){
+                } else if (predicateProductData.getBrand().toLowerCase().contains(searchKey)) {
                     return true;
-                }
-                else if(predicateProductData.getPrice().toString().contains(searchKey)){
+                } else if (predicateProductData.getProductName().toLowerCase().contains(searchKey)) {
                     return true;
-                }
-                else if(predicateProductData.getStatus().toLowerCase().contains(searchKey)){
+                } else if (predicateProductData.getPrice().toString().contains(searchKey)) {
                     return true;
+                } else if (predicateProductData.getStatus().toLowerCase().contains(searchKey)) {
+                    return true;
+                } else {
+                    return false;
                 }
-                else
-                return false;
             });
         });
-        SortedList<ProductData>sortList=new SortedList<>(filter);
+        SortedList<ProductData> sortList = new SortedList<>(filter);
         sortList.comparatorProperty().bind(addProducts_tableView.comparatorProperty());
         addProducts_tableView.setItems(sortList);
     }
-    
+
     public ObservableList<ProductData> addProductsListData() {
         ObservableList<ProductData> productList = FXCollections.observableArrayList();
         String sql = "SELECT * FROM product";
@@ -531,7 +528,7 @@ public class dashboardController implements Initializable {
         addProducts_productId.setText(String.valueOf(productData.getProductId()));
 
         addProducts_brand.setText(productData.getBrand());
-       addProducts_productType.setValue(productData.getType());
+        addProducts_productType.setValue(productData.getType());
         addProducts_productName.setText(productData.getProductName());
         addProducts_price.setText(String.valueOf(productData.getPrice()));
         addProducts_status.setValue(productData.getStatus());
@@ -540,6 +537,142 @@ public class dashboardController implements Initializable {
         image = new Image(uri, 146, 137, false, true);
         addProducts_imageView.setImage(image);
         GetData.path = productData.getImage();
+    }
+
+    public ObservableList<CustomerData> ordersListData() {
+        customerId();
+        ObservableList<CustomerData> listData = FXCollections.observableArrayList();
+        String sql = "SELECT * FROM customer WHERE customer_id='" + customerid + "'";
+        connect = Database.connectDb();
+
+        try {
+            CustomerData customerData;
+            prepare = connect.prepareStatement(sql);
+            result = prepare.executeQuery();
+            while (result.next()) {
+                customerData = new CustomerData(result.getInt("customer_id"),
+                        result.getString("productType"),
+                        result.getString("brand"),
+                        result.getString("productName"),
+                        result.getInt("quantity"),
+                        result.getDouble("price"),
+                        result.getDate("date"));
+                listData.add(customerData);
+            }
+
+        } catch (SQLException ex) {
+            Logger.getLogger(dashboardController.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        return listData;
+    }
+
+    private ObservableList<CustomerData> ordersList;
+    
+    
+     private String[] orderListType = {"Snacks", "Drinks", "Dessert", "Gadgets", "Personal Products", "Others"};
+
+    public void ordersListType() {
+        List<String> listT = new ArrayList<>();
+        for (String data : orderListType) {
+            listT.add(data);
+        }
+        ObservableList listData = FXCollections.observableArrayList(listT);
+        orders_productType.setItems(listData);
+        
+        ordersListBrand();
+    }
+
+    public void ordersListBrand(){
+        String sql="SELECT brand FROM product WHERE type='"+orders_productType.getSelectionModel().getSelectedItem()+
+                "' and status='Available'";
+         connect = Database.connectDb();
+          try {
+           
+            prepare = connect.prepareStatement(sql);
+            result = prepare.executeQuery();
+            
+            ObservableList listData=FXCollections.observableArrayList();
+            
+            while (result.next()) {
+               
+                listData.add(result.getString("brand"));
+            }
+            orders_brand.setItems(listData);
+            
+            ordersListProductName();
+
+        } catch (SQLException ex) {
+            Logger.getLogger(dashboardController.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        
+    }
+     public void ordersListProductName(){
+        String sql="SELECT * FROM product WHERE brand='"+orders_brand.getSelectionModel().getSelectedItem()+"'";
+         connect = Database.connectDb();
+          try {
+           
+            prepare = connect.prepareStatement(sql);
+            result = prepare.executeQuery();
+            
+            ObservableList listData=FXCollections.observableArrayList();
+            
+            while (result.next()) {
+               
+                listData.add(result.getString("productName"));
+            }
+            orders_productName.setItems(listData);
+
+        } catch (SQLException ex) {
+            Logger.getLogger(dashboardController.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        
+    }
+    
+    public void ordersShowListData() {
+        ordersList = ordersListData();
+        
+        orders_col_type.setCellValueFactory(new PropertyValueFactory<>("productType"));
+        orders_col_brand.setCellValueFactory(new PropertyValueFactory<>("brand"));
+        orders_col_productName.setCellValueFactory(new PropertyValueFactory<>("productName"));
+        orders_col_quantity.setCellValueFactory(new PropertyValueFactory<>("quantity"));
+        orders_col_price.setCellValueFactory(new PropertyValueFactory<>("price"));
+        
+        orders_tableView.setItems(ordersList);
+    }
+    private int customerid;
+
+    public void customerId() {
+
+        String customId = "SELECT * FROM customer ";
+        connect = Database.connectDb();
+        try {
+            prepare = connect.prepareStatement(customId);
+            result = prepare.executeQuery();
+
+            int checkId = 0;
+
+            while (result.next()) {
+                customerid = result.getInt("customer_id");
+            }
+
+            String checkData = "SELECT * FROM customer_receipt";
+
+            statement = connect.createStatement();
+            result = statement.executeQuery(checkData);
+
+            while (result.next()) {
+                checkId = result.getInt("customer_id");
+            }
+
+            if (checkId == 0) {
+                customerid++;
+            } else if (checkId == customerid) {
+                customerid++;
+            }
+
+        } catch (SQLException ex) {
+            Logger.getLogger(dashboardController.class.getName()).log(Level.SEVERE, null, ex);
+        }
     }
 
     public void switchForm(ActionEvent event) {
@@ -564,7 +697,7 @@ public class dashboardController implements Initializable {
             addProductsListType();
             addProductsListStatus();
             addProductsSearch();
-        } else if (event.getSource() == orders_btn) {
+             } else if (event.getSource() == orders_btn) {
             home_form.setVisible(false);
             addProducts_form.setVisible(false);
             orders_form.setVisible(true);
@@ -572,6 +705,11 @@ public class dashboardController implements Initializable {
             home_btn.setStyle("-fx-background-color:transparent;");
             addProducts_btn.setStyle("-fx-background-color:transparent;");
             orders_btn.setStyle("-fx-background-color: linear-gradient(to bottom right,#de6262   ,#ffb88c);");
+            
+            ordersShowListData();
+            ordersListType();
+            ordersListBrand();
+            ordersListProductName();
         }
     }
 
@@ -634,6 +772,11 @@ public class dashboardController implements Initializable {
         addProductsShowListData();
         addProductsListType();
         addProductsListStatus();
+        
+        ordersShowListData();
+        ordersListType();
+        ordersListBrand();
+        ordersListProductName();
     }
 
 }
