@@ -31,6 +31,7 @@ import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.chart.AreaChart;
 import javafx.scene.chart.BarChart;
+import javafx.scene.chart.XYChart;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Alert.AlertType;
 import javafx.scene.control.Button;
@@ -228,7 +229,10 @@ public class dashboardController implements Initializable {
     private Image image;
 
     public void homeDisplayTotalOrders(){
-        String sql="SELECT COUNT(id) FROM customer_receipt";
+        Date date= new Date();
+        java.sql.Date sqlDate=new java.sql.Date(date.getTime());
+        
+        String sql="SELECT COUNT(id) FROM customer_receipt WHERE date='"+sqlDate+"'";
          connect = Database.connectDb();
          
          int countOrders=0;
@@ -279,6 +283,55 @@ public class dashboardController implements Initializable {
         }
     }
     
+      public void displayUsername(){
+          usernameLabel.setText(GetData.username);
+      }
+      
+      public void homeIncomeChart(){
+          home_incomeChart.getData().clear();
+      String sql = "SELECT date,SUM(total) FROM customer_receipt GROUP BY date ORDER BY TIMESTAMP(date) ASC LIMIT 5";
+       connect = Database.connectDb();
+       
+       try{
+           
+           XYChart.Series chart=new XYChart.Series();
+           
+           prepare=connect.prepareStatement(sql);
+           result=prepare.executeQuery();
+           
+           while(result.next()){
+               chart.getData().add(new XYChart.Data(result.getString(1),result.getInt(2)));
+           }
+           home_incomeChart.getData().add(chart);
+       }
+       catch (SQLException ex) {
+            Logger.getLogger(dashboardController.class.getName()).log(Level.SEVERE, null, ex);
+        }
+      }
+      
+      public void homeOrdersChart(){
+          home_orderChart.getData().clear();
+      String sql = "SELECT date,COUNT(id) FROM customer_receipt GROUP BY date ORDER BY TIMESTAMP(date) ASC LIMIT 5";
+       connect = Database.connectDb();
+       
+       try{
+           
+           XYChart.Series chart=new XYChart.Series();
+           
+           prepare=connect.prepareStatement(sql);
+           result=prepare.executeQuery();
+           
+           while(result.next()){
+               chart.getData().add(new XYChart.Data(result.getString(1),result.getInt(2)));
+           }
+           home_orderChart.getData().add(chart);
+       }
+       catch (SQLException ex) {
+            Logger.getLogger(dashboardController.class.getName()).log(Level.SEVERE, null, ex);
+        }
+      }
+      
+      
     public void addProductsAdd() {
         String sql = "INSERT INTO product (product_id,type,brand,productName,price,status,image,date)"
                 + "VALUES (?,?,?,?,?,?,?,?)";
@@ -965,6 +1018,9 @@ public class dashboardController implements Initializable {
             home_btn.setStyle("-fx-background-color: linear-gradient(to bottom right,#de6262   ,#ffb88c);");
             addProducts_btn.setStyle("-fx-background-color:transparent;");
             orders_btn.setStyle("-fx-background-color:transparent;");
+            
+            homeOrdersChart();
+      homeIncomeChart();
         } else if (event.getSource() == addProducts_btn) {
             home_form.setVisible(false);
             addProducts_form.setVisible(true);
@@ -1052,9 +1108,14 @@ public class dashboardController implements Initializable {
     @Override
     public void initialize(URL location, ResourceBundle resources) {
 
+        displayUsername();
+        
         addProductsShowListData();
         addProductsListType();
         addProductsListStatus();
+        
+        homeOrdersChart();
+      homeIncomeChart();
 
         ordersShowListData();
         ordersListType();
