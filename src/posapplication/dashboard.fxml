@@ -294,7 +294,7 @@
                               </AnchorPane>
                            </children>
                         </AnchorPane>
-                        <AnchorPane fx:id="orders_form" prefHeight="695.0" prefWidth="1200.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+                        <AnchorPane fx:id="orders_form" prefHeight="695.0" prefWidth="1200.0" visible="false" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
                            <children>
                               <AnchorPane layoutX="27.0" layoutY="30.0" prefHeight="646.0" prefWidth="752.0" stylesheets="@dashboardDesign.css">
                                  <styleClass>
@@ -368,7 +368,7 @@
                                     <TextField fx:id="orders_amount" layoutX="136.0" layoutY="371.0" onAction="#ordersAmount" styleClass="textfield" stylesheets="@dashboardDesign.css" />
                                     <Button fx:id="orders_receiptBtn" layoutX="69.0" layoutY="501.0" mnemonicParsing="false" prefHeight="51.0" prefWidth="90.0" styleClass="design_buttons" stylesheets="@dashboardDesign.css" text="Receipt" />
                                     <Button fx:id="orders_payBtn" layoutX="211.0" layoutY="501.0" mnemonicParsing="false" onAction="#ordersPay" prefHeight="51.0" prefWidth="90.0" styleClass="design_buttons" stylesheets="@dashboardDesign.css" text="Pay" />
-                                    <Button fx:id="orders_resetBtn" layoutX="70.0" layoutY="572.0" mnemonicParsing="false" prefHeight="51.0" prefWidth="90.0" styleClass="design_buttons" stylesheets="@dashboardDesign.css" text="Reset" />
+                                    <Button fx:id="orders_resetBtn" layoutX="70.0" layoutY="572.0" mnemonicParsing="false" onAction="#ordersReset" prefHeight="51.0" prefWidth="90.0" styleClass="design_buttons" stylesheets="@dashboardDesign.css" text="Reset" />
                                     <ComboBox fx:id="orders_productType" layoutX="160.0" layoutY="90.0" onAction="#ordersListType" prefWidth="150.0" promptText="Choose" styleClass="textfield" stylesheets="@dashboardDesign.css" />
                                     <ComboBox fx:id="orders_brand" layoutX="160.0" layoutY="135.0" onAction="#ordersListBrand" prefWidth="150.0" promptText="Choose" styleClass="textfield" stylesheets="@dashboardDesign.css" />
                                     <ComboBox fx:id="orders_productName" layoutX="161.0" layoutY="190.0" onAction="#ordersListProductName" prefWidth="150.0" promptText="Choose" styleClass="textfield" stylesheets="@dashboardDesign.css" />

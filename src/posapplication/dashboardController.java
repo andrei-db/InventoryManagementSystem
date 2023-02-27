@@ -227,6 +227,58 @@ public class dashboardController implements Initializable {
 
     private Image image;
 
+    public void homeDisplayTotalOrders(){
+        String sql="SELECT COUNT(id) FROM customer_receipt";
+         connect = Database.connectDb();
+         
+         int countOrders=0;
+
+        try {
+           prepare = connect.prepareStatement(sql);
+            result = prepare.executeQuery();
+            while (result.next()) {
+               countOrders=result.getInt("COUNT(id)");
+            }
+            home_numberOrder.setText(String.valueOf(countOrders));
+        } catch (SQLException ex) {
+            Logger.getLogger(dashboardController.class.getName()).log(Level.SEVERE, null, ex);
+        }
+    }
+     public void homeDisplayTotalIncome(){
+        String sql="SELECT SUM(total) FROM customer_receipt";
+         connect = Database.connectDb();
+         
+         int totalIncome=0;
+
+        try {
+           prepare = connect.prepareStatement(sql);
+            result = prepare.executeQuery();
+            while (result.next()) {
+               totalIncome=result.getInt("SUM(total)");
+            }
+            home_totalIncome.setText("$"+String.valueOf(totalIncome));
+        } catch (SQLException ex) {
+            Logger.getLogger(dashboardController.class.getName()).log(Level.SEVERE, null, ex);
+        }
+    }
+      public void homeDisplayAvailableProducts(){
+        String sql="SELECT COUNT(id) FROM product WHERE status='Available'";
+         connect = Database.connectDb();
+         
+         int availableProducts=0;
+
+        try {
+           prepare = connect.prepareStatement(sql);
+            result = prepare.executeQuery();
+            while (result.next()) {
+               availableProducts=result.getInt("COUNT(id)");
+            }
+            home_availableProducts.setText(String.valueOf(availableProducts));
+        } catch (SQLException ex) {
+            Logger.getLogger(dashboardController.class.getName()).log(Level.SEVERE, null, ex);
+        }
+    }
+    
     public void addProductsAdd() {
         String sql = "INSERT INTO product (product_id,type,brand,productName,price,status,image,date)"
                 + "VALUES (?,?,?,?,?,?,?,?)";
@@ -286,6 +338,7 @@ public class dashboardController implements Initializable {
                     prepare.executeUpdate();
                     addProductsShowListData();
                     addProductsReset();
+                    homeDisplayAvailableProducts();
                 }
             }
 
@@ -343,6 +396,7 @@ public class dashboardController implements Initializable {
 
                     addProductsShowListData();
                     addProductsReset();
+                    homeDisplayAvailableProducts();
                 }
             }
         } catch (SQLException ex) {
@@ -390,6 +444,7 @@ public class dashboardController implements Initializable {
 
                     addProductsShowListData();
                     addProductsReset();
+                    homeDisplayAvailableProducts();
                 }
             }
         } catch (SQLException ex) {
@@ -637,7 +692,7 @@ public class dashboardController implements Initializable {
         Alert alert;
         try {
 
-            if (totalP > 0|| orders_amount.getText().isEmpty() ||amountP==0) {
+            if (totalP > 0 || orders_amount.getText().isEmpty() || amountP == 0) {
                 alert = new Alert(AlertType.CONFIRMATION);
                 alert.setTitle("Confirmation Message");
                 alert.setHeaderText(null);
@@ -655,15 +710,15 @@ public class dashboardController implements Initializable {
                     java.sql.Date sqlDate = new java.sql.Date(date.getTime());
                     prepare.setString(5, String.valueOf(sqlDate));
                     prepare.executeUpdate();
-                    
-                   
-                   
+
                     ordersShowListData();
+                    homeDisplayTotalOrders();
+                    homeDisplayTotalIncome();
                     
-                    totalP=0;
-                    amountP=0;
-                    balanceP=0;
-                    
+                    totalP = 0;
+                    amountP = 0;
+                    balanceP = 0;
+
                     orders_balance.setText("$0.0");
                     orders_amount.setText("");
                     orders_total.setText("$0.0");
@@ -690,23 +745,30 @@ public class dashboardController implements Initializable {
     public void ordersAmount() {
 
         Alert alert;
-        
-        amountP=Double.parseDouble(orders_amount.getText());
 
-        if (totalP > 0) {
-            if (amountP >= totalP) {
-                balanceP = amountP - totalP;
+        if (!orders_amount.getText().isEmpty()) {
 
-                orders_balance.setText("$"+String.valueOf(balanceP));
-                
+            amountP = Double.parseDouble(orders_amount.getText());
+
+            if (totalP > 0) {
+                if (amountP >= totalP) {
+                    balanceP = amountP - totalP;
+
+                    orders_balance.setText("$" + String.valueOf(balanceP));
+
+                } else {
+                    alert = new Alert(AlertType.ERROR);
+                    alert.setHeaderText(null);
+                    alert.setContentText("Invalid");
+                    alert.showAndWait();
+
+                    orders_amount.setText("");
+                }
             } else {
                 alert = new Alert(AlertType.ERROR);
                 alert.setHeaderText(null);
                 alert.setContentText("Invalid");
                 alert.showAndWait();
-                
-                
-                orders_amount.setText("");
             }
         } else {
             alert = new Alert(AlertType.ERROR);
@@ -717,6 +779,41 @@ public class dashboardController implements Initializable {
 
     }
 
+    public void ordersReset(){
+        String sql="DELETE FROM customer WHERE customer_id='" +customerid+"'";
+        connect=Database.connectDb();
+          try {
+
+              Alert alert = new Alert(AlertType.CONFIRMATION);
+                alert.setTitle("Confirmation Message");
+                alert.setHeaderText(null);
+                alert.setContentText("Are you sure you want to reset?");
+
+                Optional<ButtonType> option = alert.showAndWait();
+
+                if (option.get().equals(ButtonType.OK)) {
+                   statement=connect.createStatement();
+                   statement.executeUpdate(sql);
+                   
+                   ordersShowListData();
+                   
+                    totalP = 0;
+                    amountP = 0;
+                    balanceP = 0;
+
+                    orders_balance.setText("$0.0");
+                    orders_amount.setText("");
+                    orders_total.setText("$0.0");
+
+                } else {
+                    return;
+                }
+
+        } catch (SQLException ex) {
+            Logger.getLogger(dashboardController.class.getName()).log(Level.SEVERE, null, ex);
+        }
+    }
+    
     private double totalP;
 
     public void ordersDisplayTotal() {
@@ -816,7 +913,7 @@ public class dashboardController implements Initializable {
     public void ordersShowListData() {
         ordersList = ordersListData();
 
-        System.out.println(ordersList.size());
+       
         orders_col_type.setCellValueFactory(new PropertyValueFactory<>("productType"));
         orders_col_brand.setCellValueFactory(new PropertyValueFactory<>("brand"));
         orders_col_productName.setCellValueFactory(new PropertyValueFactory<>("productName"));
@@ -839,7 +936,7 @@ public class dashboardController implements Initializable {
 
             while (result.next()) {
                 customerid = result.getInt("customer_id");
-                System.out.print(customerid + " CI ");
+               
             }
 
             String checkData = "SELECT * FROM customer_receipt";
@@ -851,8 +948,8 @@ public class dashboardController implements Initializable {
                 checkId = result.getInt("customer_id");
             }
 
-          if (checkId == customerid) {
-                customerid+=1;
+            if (checkId == customerid) {
+                customerid += 1;
             }
         } catch (SQLException ex) {
             Logger.getLogger(dashboardController.class.getName()).log(Level.SEVERE, null, ex);
@@ -954,8 +1051,7 @@ public class dashboardController implements Initializable {
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
-       
-        
+
         addProductsShowListData();
         addProductsListType();
         addProductsListStatus();
@@ -966,6 +1062,9 @@ public class dashboardController implements Initializable {
         ordersListProductName();
         ordersSpinner();
         ordersDisplayTotal();
+        homeDisplayTotalOrders();
+        homeDisplayTotalIncome();
+        homeDisplayAvailableProducts();
     }
 
 }
