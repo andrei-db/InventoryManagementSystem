@@ -294,7 +294,7 @@
                               </AnchorPane>
                            </children>
                         </AnchorPane>
-                        <AnchorPane fx:id="orders_form" prefHeight="695.0" prefWidth="1200.0" visible="false" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+                        <AnchorPane fx:id="orders_form" prefHeight="695.0" prefWidth="1200.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
                            <children>
                               <AnchorPane layoutX="27.0" layoutY="30.0" prefHeight="646.0" prefWidth="752.0" stylesheets="@dashboardDesign.css">
                                  <styleClass>
@@ -339,7 +339,7 @@
                                           <Font size="16.0" />
                                        </font>
                                     </Label>
-                                    <Spinner fx:id="orders_quantity" layoutX="165.0" layoutY="242.0" prefHeight="25.0" prefWidth="141.0" styleClass="textfield" stylesheets="@dashboardDesign.css" />
+                                    <Spinner fx:id="orders_quantity" layoutX="165.0" layoutY="242.0" onMouseClicked="#ordersShowSpinnerValue" prefHeight="25.0" prefWidth="141.0" styleClass="textfield" stylesheets="@dashboardDesign.css" />
                                     <Label layoutX="64.0" layoutY="333.0" text="Total:">
                                        <font>
                                           <Font size="16.0" />
@@ -372,7 +372,7 @@
                                     <ComboBox fx:id="orders_productType" layoutX="160.0" layoutY="90.0" onAction="#ordersListType" prefWidth="150.0" promptText="Choose" styleClass="textfield" stylesheets="@dashboardDesign.css" />
                                     <ComboBox fx:id="orders_brand" layoutX="160.0" layoutY="135.0" onAction="#ordersListBrand" prefWidth="150.0" promptText="Choose" styleClass="textfield" stylesheets="@dashboardDesign.css" />
                                     <ComboBox fx:id="orders_productName" layoutX="161.0" layoutY="190.0" onAction="#ordersListProductName" prefWidth="150.0" promptText="Choose" styleClass="textfield" stylesheets="@dashboardDesign.css" />
-                                    <Button fx:id="orders_addBtn" layoutX="244.0" layoutY="282.0" mnemonicParsing="false" prefHeight="51.0" prefWidth="90.0" styleClass="design_buttons" stylesheets="@dashboardDesign.css" text="Add" />
+                                    <Button fx:id="orders_addBtn" layoutX="244.0" layoutY="282.0" mnemonicParsing="false" onAction="#ordersAdd" prefHeight="51.0" prefWidth="90.0" styleClass="design_buttons" stylesheets="@dashboardDesign.css" text="Add" />
                                  </children>
                               </AnchorPane>
                            </children>
