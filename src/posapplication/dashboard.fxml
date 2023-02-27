@@ -365,9 +365,9 @@
                                           <Font size="16.0" />
                                        </font>
                                     </Label>
-                                    <TextField fx:id="orders_amount" layoutX="136.0" layoutY="371.0" styleClass="textfield" stylesheets="@dashboardDesign.css" />
+                                    <TextField fx:id="orders_amount" layoutX="136.0" layoutY="371.0" onAction="#ordersAmount" styleClass="textfield" stylesheets="@dashboardDesign.css" />
                                     <Button fx:id="orders_receiptBtn" layoutX="69.0" layoutY="501.0" mnemonicParsing="false" prefHeight="51.0" prefWidth="90.0" styleClass="design_buttons" stylesheets="@dashboardDesign.css" text="Receipt" />
-                                    <Button fx:id="orders_payBtn" layoutX="211.0" layoutY="501.0" mnemonicParsing="false" prefHeight="51.0" prefWidth="90.0" styleClass="design_buttons" stylesheets="@dashboardDesign.css" text="Pay" />
+                                    <Button fx:id="orders_payBtn" layoutX="211.0" layoutY="501.0" mnemonicParsing="false" onAction="#ordersPay" prefHeight="51.0" prefWidth="90.0" styleClass="design_buttons" stylesheets="@dashboardDesign.css" text="Pay" />
                                     <Button fx:id="orders_resetBtn" layoutX="70.0" layoutY="572.0" mnemonicParsing="false" prefHeight="51.0" prefWidth="90.0" styleClass="design_buttons" stylesheets="@dashboardDesign.css" text="Reset" />
                                     <ComboBox fx:id="orders_productType" layoutX="160.0" layoutY="90.0" onAction="#ordersListType" prefWidth="150.0" promptText="Choose" styleClass="textfield" stylesheets="@dashboardDesign.css" />
                                     <ComboBox fx:id="orders_brand" layoutX="160.0" layoutY="135.0" onAction="#ordersListBrand" prefWidth="150.0" promptText="Choose" styleClass="textfield" stylesheets="@dashboardDesign.css" />

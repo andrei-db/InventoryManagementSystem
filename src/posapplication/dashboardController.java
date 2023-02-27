@@ -579,7 +579,7 @@ public class dashboardController implements Initializable {
 
         try {
 
-             String checkData = "SELECT * FROM product WHERE productName ='" + orders_productName.getSelectionModel().getSelectedItem() + "'";
+            String checkData = "SELECT * FROM product WHERE productName ='" + orders_productName.getSelectionModel().getSelectedItem() + "'";
 
             double priceData = 0;
             statement = connect.createStatement();
@@ -592,68 +592,153 @@ public class dashboardController implements Initializable {
             double totalPData = (priceData * qty);
 
             Alert alert;
-            if(orders_productType.getSelectionModel().getSelectedItem()==null
-                    ||orders_brand.getSelectionModel().getSelectedItem()==null
-                    ||orders_productName.getSelectionModel().getSelectedItem()==null
-                    ||totalPData==0){
-                
-              alert = new Alert(AlertType.ERROR);
+            if (orders_productType.getSelectionModel().getSelectedItem() == null
+                    || orders_brand.getSelectionModel().getSelectedItem() == null
+                    || orders_productName.getSelectionModel().getSelectedItem() == null
+                    || totalPData == 0) {
+
+                alert = new Alert(AlertType.ERROR);
                 alert.setTitle("Error Message");
                 alert.setHeaderText(null);
                 alert.setContentText("Please choose product first");
                 alert.showAndWait();
-            }else{
-            
-            prepare = connect.prepareStatement(sql);
+            } else {
 
-            prepare.setString(1, String.valueOf(customerid));
-            prepare.setString(2, (String) orders_productType.getSelectionModel().getSelectedItem());
-            prepare.setString(3, (String) orders_brand.getSelectionModel().getSelectedItem());
-            prepare.setString(4, (String) orders_productName.getSelectionModel().getSelectedItem());
-            prepare.setString(5, (String) String.valueOf(qty));
+                prepare = connect.prepareStatement(sql);
 
-           
-            prepare.setString(6, String.valueOf(totalPData));
+                prepare.setString(1, String.valueOf(customerid));
+                prepare.setString(2, (String) orders_productType.getSelectionModel().getSelectedItem());
+                prepare.setString(3, (String) orders_brand.getSelectionModel().getSelectedItem());
+                prepare.setString(4, (String) orders_productName.getSelectionModel().getSelectedItem());
+                prepare.setString(5, (String) String.valueOf(qty));
 
-            Date date = new Date();
-            java.sql.Date sqlDate = new java.sql.Date(date.getTime());
+                prepare.setString(6, String.valueOf(totalPData));
 
-            prepare.setString(7, String.valueOf(sqlDate));
+                Date date = new Date();
+                java.sql.Date sqlDate = new java.sql.Date(date.getTime());
 
-            prepare.executeUpdate();
-           ordersShowListData();
-            ordersDisplayTotal();
-            
+                prepare.setString(7, String.valueOf(sqlDate));
+
+                prepare.executeUpdate();
+                ordersShowListData();
+                ordersDisplayTotal();
+
             }
 
         } catch (SQLException ex) {
             Logger.getLogger(dashboardController.class.getName()).log(Level.SEVERE, null, ex);
         }
     }
-    
-   
-    
+
+    public void ordersPay() {
+        String sql = "INSERT INTO customer_receipt (customer_id,total,amount,balance,date)"
+                + " VALUES(?,?,?,?,?)";
+        connect = Database.connectDb();
+        Alert alert;
+        try {
+
+            if (totalP > 0|| orders_amount.getText().isEmpty() ||amountP==0) {
+                alert = new Alert(AlertType.CONFIRMATION);
+                alert.setTitle("Confirmation Message");
+                alert.setHeaderText(null);
+                alert.setContentText("Are you sure?");
+
+                Optional<ButtonType> option = alert.showAndWait();
+
+                if (option.get().equals(ButtonType.OK)) {
+                    prepare = connect.prepareStatement(sql);
+                    prepare.setString(1, String.valueOf(customerid));
+                    prepare.setString(2, String.valueOf(totalP));
+                    prepare.setString(3, String.valueOf(amountP));
+                    prepare.setString(4, String.valueOf(balanceP));
+                    Date date = new Date();
+                    java.sql.Date sqlDate = new java.sql.Date(date.getTime());
+                    prepare.setString(5, String.valueOf(sqlDate));
+                    prepare.executeUpdate();
+                    
+                   
+                   
+                    ordersShowListData();
+                    
+                    totalP=0;
+                    amountP=0;
+                    balanceP=0;
+                    
+                    orders_balance.setText("$0.0");
+                    orders_amount.setText("");
+                    orders_total.setText("$0.0");
+
+                } else {
+                    return;
+                }
+
+            } else {
+                alert = new Alert(AlertType.ERROR);
+                alert.setTitle("Error Message");
+                alert.setHeaderText(null);
+                alert.setContentText("Invalid");
+                alert.showAndWait();
+            }
+
+        } catch (SQLException ex) {
+            Logger.getLogger(dashboardController.class.getName()).log(Level.SEVERE, null, ex);
+        }
+    }
+    private double amountP;
+    private double balanceP;
+
+    public void ordersAmount() {
+
+        Alert alert;
+        
+        amountP=Double.parseDouble(orders_amount.getText());
+
+        if (totalP > 0) {
+            if (amountP >= totalP) {
+                balanceP = amountP - totalP;
+
+                orders_balance.setText("$"+String.valueOf(balanceP));
+                
+            } else {
+                alert = new Alert(AlertType.ERROR);
+                alert.setHeaderText(null);
+                alert.setContentText("Invalid");
+                alert.showAndWait();
+                
+                
+                orders_amount.setText("");
+            }
+        } else {
+            alert = new Alert(AlertType.ERROR);
+            alert.setHeaderText(null);
+            alert.setContentText("Invalid");
+            alert.showAndWait();
+        }
+
+    }
+
     private double totalP;
-    public void ordersDisplayTotal(){
-       
-        String sql="SELECT SUM(price) FROM customer WHERE customer_id ='" +customerid+"'";
-        connect=Database.connectDb();
-         try {
-           
+
+    public void ordersDisplayTotal() {
+
+        String sql = "SELECT SUM(price) FROM customer WHERE customer_id ='" + customerid + "'";
+        connect = Database.connectDb();
+        try {
+
             prepare = connect.prepareStatement(sql);
             result = prepare.executeQuery();
             while (result.next()) {
-               totalP=result.getDouble("SUM(price)");
-               
+                totalP = result.getDouble("SUM(price)");
+
             }
-           
-            orders_total.setText("$"+String.valueOf(totalP));
+
+            orders_total.setText("$" + String.valueOf(totalP));
 
         } catch (SQLException ex) {
             Logger.getLogger(dashboardController.class.getName()).log(Level.SEVERE, null, ex);
         }
     }
-    
+
     private String[] orderListType = {"Snacks", "Drinks", "Dessert", "Gadgets", "Personal Products", "Others"};
 
     public void ordersListType() {
@@ -750,11 +835,11 @@ public class dashboardController implements Initializable {
             prepare = connect.prepareStatement(customId);
             result = prepare.executeQuery();
 
-            int checkId = 0;
+            int checkId = -1;
 
             while (result.next()) {
                 customerid = result.getInt("customer_id");
-                System.out.print(customerid+" ");
+                System.out.print(customerid + " CI ");
             }
 
             String checkData = "SELECT * FROM customer_receipt";
@@ -762,16 +847,13 @@ public class dashboardController implements Initializable {
             statement = connect.createStatement();
             result = statement.executeQuery(checkData);
 
-//            while (result.next()) {
-//                checkId = result.getInt("customer_id");
-//            }
-//
-//            if (checkId == 0) {
-//                customerid+=1;
-//            } else if (checkId == customerid) {
-//                customerid+=1;
-//            }
+            while (result.next()) {
+                checkId = result.getInt("customer_id");
+            }
 
+          if (checkId == customerid) {
+                customerid+=1;
+            }
         } catch (SQLException ex) {
             Logger.getLogger(dashboardController.class.getName()).log(Level.SEVERE, null, ex);
         }
@@ -872,6 +954,8 @@ public class dashboardController implements Initializable {
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
+       
+        
         addProductsShowListData();
         addProductsListType();
         addProductsListStatus();
