@@ -11,13 +11,14 @@ import java.util.Date;
  * @author andreidb
  */
 public class CustomerData {
+
     private Integer customerId;
     private String productType;
-     private String brand;
-      private String productName;
-      private Integer quantity;
-      private Double price;
-      private Date date;
+    private String brand;
+    private String productName;
+    private Integer quantity;
+    private Double price;
+    private Date date;
 
     public CustomerData(Integer customerId, String productType, String brand, String productName, Integer quantity, Double price, Date date) {
         this.customerId = customerId;
@@ -56,7 +57,5 @@ public class CustomerData {
     public Date getDate() {
         return date;
     }
-      
-      
-      
+
 }
